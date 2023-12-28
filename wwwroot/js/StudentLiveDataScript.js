@@ -68,5 +68,42 @@ function DeleteRecord(rollno) {
     }
 }
 
+function Clickme() {
 
+    var tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = "";
 
+    const socket = new WebSocket('wss://ws.finnhub.io?token=cm60nbpr01qjc6l4qie0cm60nbpr01qjc6l4qieg');
+
+    // Connection opened -> Subscribe
+    socket.addEventListener('open', function (event) {
+        socket.send(JSON.stringify({ 'type': 'subscribe', 'symbol': 'AAPL' }))
+        socket.send(JSON.stringify({ 'type': 'subscribe', 'symbol': 'BINANCE:BTCUSDT' }))
+        socket.send(JSON.stringify({ 'type': 'subscribe', 'symbol': 'IC MARKETS:1' }))
+    });
+
+    // Listen for messages
+    socket.addEventListener('message', function (event) {
+        //console.log('Message from server ', event.data);
+
+        const myData = JSON.parse(event.data);
+
+        if (myData && myData.data && myData.data.length > 0) {
+
+            myData.data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${item.p}</td>
+                                <td>${item.s}</td>
+                                <td>${item.t}</td>
+                                <td>${item.v}</td>`;
+                tableBody.innerHTML = "";
+                tableBody.appendChild(row);
+            }
+        )}
+    });
+
+    // Unsubscribe
+    var unsubscribe = function (symbol) {
+        socket.send(JSON.stringify({ 'type': 'unsubscribe', 'symbol': symbol }))
+    }
+}

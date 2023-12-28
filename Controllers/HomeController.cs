@@ -20,6 +20,12 @@ namespace RealTimeDataReflection.Controllers
         {
             return View();
         }  
+
+        public IActionResult APIData()
+        {
+            return View();
+        }
+
         public List<Student> GetAllStudents()
         {
             string connectionString = _configuration.GetConnectionString("ConnectionString");
